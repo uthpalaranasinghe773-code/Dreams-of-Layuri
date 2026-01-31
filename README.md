@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>A/L Performance Tracker</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        input, button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #333;
+            padding: 8px;
+        }
+
+        .subject-btn {
+            width: 150px;
+            height: 40px;
+            margin: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="container" id="loginPage">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Username"><br>
+    <input type="password" id="password" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="container hidden" id="dashboard">
+    <h2>Subject Dashboard</h2>
+    <button class="subject-btn" onclick="openSubject('Biology')">Biology</button>
+    <button class="subject-btn" onclick="openSubject('Physics')">Physics</button>
+    <button class="subject-btn" onclick="openSubject('Chemistry')">Chemistry</button>
+</div>
+
+<!-- SUBJECT PAGE -->
+<div class="container hidden" id="subjectPage">
+    <h2 id="subjectTitle"></h2>
+
+    <table>
+        <tr>
+            <th>Paper No</th>
+            <th>Paper 1 Marks</th>
+            <th>Paper 2 Marks</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td><input type="number" class="p1"></td>
+            <td><input type="number" class="p2"></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><input type="number" class="p1"></td>
+            <td><input type="number" class="p2"></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><input type="number" class="p1"></td>
+            <td><input type="number" class="p2"></td>
+        </tr>
+    </table>
+
+    <br>
+    <button onclick="generateGraph()">Generate Linear Graph</button>
+    <button onclick="goBack()">Back</button>
+
+    <canvas id="marksChart" width="600" height="300"></canvas>
+</div>
+
+<script>
+    let chart;
+
+    function login() {
+        const user = document.getElementById("username").value;
+        const pass = document.getElementById("password").value;
+
+        if (user === "admin" && pass === "1234") {
+            document.getElementById("loginPage").classList.add("hidden");
+            document.getElementById("dashboard").classList.remove("hidden");
+        } else {
+            alert("Invalid login!");
+        }
+    }
+
+    function openSubject(subject) {
+        document.getElementById("dashboard").classList.add("hidden");
+        document.getElementById("subjectPage").classList.remove("hidden");
+        document.getElementById("subjectTitle").innerText = subject;
+    }
+
+    function goBack() {
+        document.getElementById("subjectPage").classList.add("hidden");
+        document.getElementById("dashboard").classList.remove("hidden");
+    }
+
+    function generateGraph() {
+        const paper1 = document.querySelectorAll(".p1");
+        const paper2 = document.querySelectorAll(".p2");
+
+        let labels = [];
+        let marks1 = [];
+        let marks2 = [];
+
+        for (let i = 0; i < paper1.length; i++) {
+            labels.push("Paper " + (i + 1));
+            marks1.push(paper1[i].value || 0);
+            marks2.push(paper2[i].value || 0);
+        }
+
+        const ctx = document.getElementById("marksChart").getContext("2d");
+
+        if (chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Paper 1 Marks',
+                        data: marks1,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Paper 2 Marks',
+                        data: marks2,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Marks Obtained'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Paper Number'
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
